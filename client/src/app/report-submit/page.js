@@ -15,7 +15,7 @@ export default function Home() {
       if (end) params.push(`end=${encodeURIComponent(end)}`);
       const query = params.length ? `?${params.join("&")}` : "";
       const res = await fetch(
-        `https://api-oos.jojonomic.com/27407/greenpeace/rnd/get-report${query}`
+        `https://api-oos.jojonomic.com/27407/greenpeace/rnd/get-report-submissions${query}`
       );
       const json = await res.json();
       setData(json.data || []);
@@ -40,8 +40,13 @@ export default function Home() {
     import("xlsx").then((XLSX) => {
       const ws = XLSX.utils.json_to_sheet(
         data.map((row) => ({
+          fullname: row.fullname,
+          phone_no: row.phone_no,
+          email: row.email,
           source: row.source,
-          traffic: row.traffic,
+          submitted_at: new Date(row.created_at).toLocaleString("id-ID", {
+            timeZone: "Asia/Jakarta",
+          }),
         }))
       );
       const wb = XLSX.utils.book_new();
@@ -93,8 +98,21 @@ export default function Home() {
           <table className="min-w-full border border-gray-300">
             <thead>
               <tr>
-                <th className="border px-4 py-2 bg-gray-100">Source</th>
-                <th className="border px-4 py-2 bg-gray-100">Traffic</th>
+                <th className="border px-4 py-2 bg-gray-100 text-center">
+                  Nama Lengkap
+                </th>
+                <th className="border px-4 py-2 bg-gray-100 text-center">
+                  Nomor Handphone
+                </th>
+                <th className="border px-4 py-2 bg-gray-100 text-center">
+                  Email
+                </th>
+                <th className="border px-4 py-2 bg-gray-100 text-center">
+                  Source
+                </th>
+                <th className="border px-4 py-2 bg-gray-100 text-center">
+                  Submission Time
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -107,8 +125,23 @@ export default function Home() {
               ) : (
                 data.map((row, idx) => (
                   <tr key={row.id || idx}>
-                    <td className="border px-4 py-2">{row.source}</td>
-                    <td className="border px-4 py-2">{row.traffic}</td>
+                    <td className="border px-4 py-2 text-center">
+                      {row.fullname}
+                    </td>
+                    <td className="border px-4 py-2 text-center">
+                      {row.phone_no}
+                    </td>
+                    <td className="border px-4 py-2 text-center">
+                      {row.email}
+                    </td>
+                    <td className="border px-4 py-2 text-center">
+                      {row.source}
+                    </td>
+                    <td className="border px-4 py-2 text-center">
+                      {new Date(row.created_at).toLocaleString("id-ID", {
+                        timeZone: "Asia/Jakarta",
+                      })}
+                    </td>
                   </tr>
                 ))
               )}
